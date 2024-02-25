@@ -9,10 +9,10 @@ key_press_state = 0
 def on_press(key):
     global key_press_state
     try:
-        if key == keyboard.Key.left: # 2 is RIGHT!!!
+        if key == keyboard.Key.left: # 2 is LEFT!!!
             key_press_state = 1
         elif key == keyboard.Key.right:
-            key_press_state = 2 # 1 is LEFT!!!
+            key_press_state = 2 # 1 is RIGHT!!!
     except AttributeError:
         pass
 
