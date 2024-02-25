@@ -19,8 +19,8 @@ svm_clf_loaded = load(svm_model_filename)
 scaler = load(scaler_filename)
 
 # Initialize the Duckiebot
-SIMULATED_ROBOT_NAME = "map_0/vehicle_0"  # Change if using a real robot
-robot = DB21J(SIMULATED_ROBOT_NAME, simulated=True)  # Set simulated=False for a real robot
+SIMULATED_ROBOT_NAME = "perseverance"  # Change if using a real robot
+robot = DB21J(SIMULATED_ROBOT_NAME, simulated=False)  # Set simulated=False for a real robot
 
 # Start the motors
 robot.motors.start()
@@ -53,18 +53,18 @@ while sample_count < max_samples:
 
     # Control the Duckiebot based on the prediction
     if prediction == 2:  # Turn left
-        speeds = [0.45,0.15]
+        speeds = [0.5,0.1]
         robot.motors.publish(tuple(speeds))
     elif prediction == 1:  # Turn right
-        speeds = [0.15,0.45]
+        speeds = [0.1,0.5]
         robot.motors.publish(tuple(speeds))
     else:  # Go straight
-        speeds = [0.3,0.3]
+        speeds = [0.6,0.6]
         robot.motors.publish(tuple(speeds))
 
     print(f"Prediction for chunk starting at sample {sample_count}: {prediction}")
     sample_count += window_size  # Update the sample count by the chunk size
-    time.sleep(0.05)  # Adjust as needed for your robot's speed
+    #time.sleep(0.05)  # Adjust as needed for your robot's speed
 
 # Stop the motors
 robot.motors.stop()
