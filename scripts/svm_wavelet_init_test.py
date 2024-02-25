@@ -11,8 +11,9 @@ from joblib import dump
 
 # List of file paths
 file_paths = [
-    '/Users/markolchanyi/Desktop/training_data/mark_tongue_left_right_60k_samples_session_1.xlsx',
-    '/Users/markolchanyi/Desktop/training_data/mark_tongue_left_right_60k_samples_session_2.xlsx'
+    '/Users/markolchanyi/Desktop/training_data/mark_cheeks_left_right_60k_samples_session_1.xlsx',
+    '/Users/markolchanyi/Desktop/training_data/mark_cheeks_left_right_60k_samples_session_2.xlsx',
+    '/Users/markolchanyi/Desktop/training_data/mark_cheeks_left_right_60k_samples_session_3.xlsx'
 ]
 
 # Load and concatenate the datasets
@@ -21,8 +22,8 @@ df = pd.concat(df_list, ignore_index=True)
 
 # Parameters
 sampling_rate = 500  # Hz
-window_size = int(0.2 * sampling_rate)  # 0.2 seconds window
-max_shift = int(0.05 * sampling_rate)  # Maximum shift of 0.05 seconds
+window_size = int(0.3 * sampling_rate)  # 0.2 seconds window
+max_shift = int(0.02 * sampling_rate)  # Maximum shift of 0.05 seconds
 wavelet = 'db4'  # Daubechies order 4, chosen for computational efficiency
 
 def extract_wavelet_features(signal, wavelet_name, level):
@@ -55,7 +56,7 @@ X = np.array(X)
 y = np.array(y)
 
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Standardize the features (mean=0, std=1)
 scaler = StandardScaler()

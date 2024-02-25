@@ -4,17 +4,21 @@ import matplotlib.pyplot as plt
 from joblib import load
 from sklearn.preprocessing import StandardScaler
 import pywt
+import time
 
-# Define the function to extract features using wavelet transform
+
+
 def extract_wavelet_features(signal, wavelet_name, level):
+    start_time = time.time()  # Start timing feature extraction
     coeffs = pywt.wavedec(signal, wavelet_name, level=level)
     features = []
     for coeff in coeffs:
         features.extend([np.mean(coeff), np.std(coeff)])
-    return features
+    end_time = time.time()  # End timing feature extraction
+    return features, end_time - start_time  # Return features and time taken
 
 # Load the new dataset from the Excel file
-new_file_path = '/Users/markolchanyi/Desktop/training_data/mark_tongue_left_right_60k_samples_session_3.xlsx'  # Update this path to your new Excel file
+new_file_path = '/Users/markolchanyi/Desktop/training_data/mark_cheeks_left_right_60k_samples_session_2.xlsx'  # Update this path to your new Excel file
 df_new = pd.read_excel(new_file_path)
 
 # Parameters for feature extraction
@@ -23,29 +27,44 @@ window_size = int(0.2 * sampling_rate)  # 0.2 seconds window
 wavelet = 'db4'  # Daubechies order 4, chosen for computational efficiency
 max_level = 3  # Maximum decomposition level
 
-# Process the new data - create windows and extract features
-X_new = []
-for i in range(0, df_new.shape[0] - window_size, window_size):
-    window = df_new.iloc[i:i + window_size]
-    features = []
-    for channel in range(1, 8):  # Assuming Channels 1 through 7 as before
-        signal = window[f'Channel_{channel}']
-        features.extend(extract_wavelet_features(signal, wavelet, max_level))
-    X_new.append(features)
-
-X_new = np.array(X_new)
-
 # Load the scaler and the trained SVM model
 scaler_filename = '/Users/markolchanyi/Desktop/scaler.joblib'
 model_filename = '/Users/markolchanyi/Desktop/svm_model.joblib'
 scaler = load(scaler_filename)
 svm_clf_loaded = load(model_filename)
 
-# Standardize the features of the new dataset using the loaded scaler
-X_new_scaled = scaler.transform(X_new)
+# Process the new data - create windows, extract features, and predict
+total_feature_extraction_time = 0
+total_prediction_time = 0
+y_new_pred = []
 
-# Predict with the loaded SVM model
-y_new_pred = svm_clf_loaded.predict(X_new_scaled)
+for i in range(0, df_new.shape[0] - window_size, window_size):
+    window = df_new.iloc[i:i + window_size]
+    features = []
+    for channel in range(1, 8):  # Assuming Channels 1 through 7 as before
+        signal = window[f'Channel_{channel}']
+        extracted_features, extraction_time = extract_wavelet_features(signal, wavelet, max_level)
+        features.extend(extracted_features)
+        total_feature_extraction_time += extraction_time
+
+    # Standardize the features of the window
+    X_window_scaled = scaler.transform([features])
+
+    # Predict with the loaded SVM model
+    start_time = time.time()
+    prediction = svm_clf_loaded.predict(X_window_scaled)
+    end_time = time.time()
+    total_prediction_time += end_time - start_time
+
+    y_new_pred.append(prediction[0])
+
+# Calculate average times
+average_feature_extraction_time = total_feature_extraction_time / len(y_new_pred)
+average_prediction_time = total_prediction_time / len(y_new_pred)
+print(f"Average feature extraction time per window: {average_feature_extraction_time:.4f} seconds")
+print(f"Average prediction time per window: {average_prediction_time:.4f} seconds")
+
+
 
 # Plotting actual KeyPress column
 plt.figure(figsize=(12, 6))
