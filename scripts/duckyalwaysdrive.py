@@ -11,7 +11,7 @@ robot: DB21J = DB21J(SIMULATED_ROBOT_NAME, simulated=True)  # change accordingly
 
 # Define global variables for speeds and movement flags
 speeds = [0,0];
-straight = [0.5,0.5]
+straight = [1,1]
 pressed = False;
 
 # def update_speeds(spd):
@@ -38,9 +38,11 @@ def on_press(key):
         return
     pressed = True;
     if key == keyboard.Key.left:
-        speeds[0] -= 0.2;
+        speeds[0] -= 0.8;
+        speeds[1] -= 0.5;
     elif key == keyboard.Key.right:
-        speeds[1] -= 0.2;
+        speeds[1] -= 0.8;
+        speeds[0] -= 0.5;   
     elif key == keyboard.Key.down:
         speeds[0] = -straight[0];
         speeds[1] = -straight[1];
