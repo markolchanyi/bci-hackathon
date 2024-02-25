@@ -9,10 +9,10 @@ key_press_state = 0
 def on_press(key):
     global key_press_state
     try:
-        if key == keyboard.Key.left: # 2 is LEFT!!!
-            key_press_state = 2
+        if key == keyboard.Key.left: # 2 is RIGHT!!!
+            key_press_state = 1
         elif key == keyboard.Key.right:
-            key_press_state = 1 # 1 is RIGHT!!!
+            key_press_state = 2 # 1 is LEFT!!!
     except AttributeError:
         pass
 
@@ -36,7 +36,7 @@ def main():
     # Prepare a list to store the data
     eeg_data = []
     sample_count = 0
-    max_samples = 500000
+    max_samples = 60000
 
     while sample_count < max_samples:
         global key_press_state
@@ -51,7 +51,7 @@ def main():
     eeg_df = pd.DataFrame(eeg_data, columns=["Timestamp"] + [f"Channel_{i}" for i in range(1, 12)] + ["KeyPress"])
 
     # Save the DataFrame to an Excel file
-    excel_filename = "/Users/markolchanyi/Desktop/mark_tongue_left_right_session_1.xlsx"
+    excel_filename = "/Users/markolchanyi/Desktop/david_cheeks_left_right_60k_samples_session_1.xlsx"
     eeg_df.to_excel(excel_filename, index=False)
     print(f"EEG data saved to {excel_filename}")
 
